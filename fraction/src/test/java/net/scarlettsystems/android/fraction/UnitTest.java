@@ -56,6 +56,20 @@ public class UnitTest
 	}
 
 	@Test
+	public void power()
+	{
+		assertEquals(new Fraction(4,9), new Fraction(2, 3).pow(2));
+		assertEquals(new Fraction(8,343), new Fraction(2, 7).pow(3));
+	}
+
+	@Test
+	public void logarithm()
+	{
+		assertEquals(-0.69314718, new Fraction(1, 2).log(), 0.000001);
+		assertEquals(5.540008986684, new Fraction(12312578345234L, 48345234856L).log(), 0.000001);
+	}
+
+	@Test
 	public void value()
 	{
 		assertEquals(0.5, new Fraction(1,2).getValue(1), 0.000001);

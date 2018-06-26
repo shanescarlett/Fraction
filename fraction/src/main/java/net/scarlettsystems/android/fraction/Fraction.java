@@ -100,6 +100,23 @@ public class Fraction
 	}
 
 	/**
+	 * Get a double representation of the current fraction.
+	 *
+	 * @param decimalDigits precision in digits
+	 * @return decimal approximation of the fraction
+	 */
+	public double getValue(int decimalDigits)
+	{
+		if(decimalDigits < 0)
+		{
+			throw new IllegalArgumentException("Precision must be a positive integer.");
+		}
+		return new BigDecimal(getNumerator())
+				.divide(new BigDecimal(getDenominator()),  decimalDigits, RoundingMode.HALF_EVEN)
+				.doubleValue();
+	}
+
+	/**
 	 * Add two fractions.
 	 *
 	 * @param addend fraction to add to the current object
@@ -240,20 +257,24 @@ public class Fraction
 	}
 
 	/**
-	 * Get a {@link double} representation of the current fraction.
+	 * Raise the current fraction by a specified integer exponent.
 	 *
-	 * @param decimalDigits precision in digits
-	 * @return decimal approximation of the fraction
+	 * @param exponent integer exponent
+	 * @return resultant fraction
 	 */
-	public double getValue(int decimalDigits)
+	public Fraction pow(int exponent)
 	{
-		if(decimalDigits < 0)
-		{
-			throw new IllegalArgumentException("Precision must be a positive integer.");
-		}
-		return new BigDecimal(getNumerator())
-				.divide(new BigDecimal(getDenominator()),  decimalDigits, RoundingMode.HALF_EVEN)
-				.doubleValue();
+		return new Fraction(getNumerator().pow(exponent), getDenominator().pow(exponent)).reduce();
+	}
+
+	/**
+	 * Take the natural logarithm of the current fraction.
+	 *
+	 * @return log base {@code e}
+	 */
+	public double log()
+	{
+		return logBigInteger(getNumerator()) - logBigInteger(getDenominator());
 	}
 
 	/**
@@ -298,5 +319,20 @@ public class Fraction
 		mNumerator = getNumerator().divide(common);
 		mDenominator = getDenominator().divide(common);
 		return this;
+	}
+
+	/**
+	 * Internal function to take the natural logarithm of a BigInteger.
+	 *
+	 * @return natural log as double
+	 */
+	private static double logBigInteger(BigInteger val)
+	{
+		double LOG2 = Math.log(2.0);
+		int blex = val.bitLength() - 1022; // any value in 60..1023 is ok
+		if (blex > 0)
+			val = val.shiftRight(blex);
+		double res = Math.log(val.doubleValue());
+		return (blex > 0 ? res + blex * LOG2 : res);
 	}
 }
